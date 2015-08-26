@@ -17,8 +17,7 @@
                     classList.push(attr.id);
                 }
 
-                // assign the document click handler to a variable so we can un-register it when the directive is destroyed
-                $document.on('click', function(e) {
+                var handler = function(e) {
                     var i = 0,
                         element;
 
@@ -44,14 +43,17 @@
                     }
 
                     // if we have got this far, then we are good to go with processing the command passed in via the click-outside attribute
-                    return $scope.$apply(function () {
+                    $scope.$apply(function () {
                         return fn($scope);
                     });
-                });
+                };
+
+                // assign the document click handler to a variable so we can un-register it when the directive is destroyed
+                $document.on('click', handler);
 
                 // when the scope is destroyed, clean up the documents click handler as we don't want it hanging around
                 $scope.$on('$destroy', function() {
-                    $document.off('click');
+                    $document.off('click', handler);
                 });
             }
         };
